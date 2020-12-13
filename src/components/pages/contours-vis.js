@@ -8,8 +8,8 @@ const ContoursVis = () => {
       <div className='row'>
         <h1>Hello World!</h1>
       </div>
-      <div className='row'>
-        <div style={{border: "10px solid black"}}>
+      <div className='row no-gutters'>
+        <div className="col" style={{border: "10px solid black"}}>
           <AlyeskaContourMap />
         </div>
       </div>
