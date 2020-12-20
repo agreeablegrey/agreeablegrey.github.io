@@ -3,7 +3,7 @@ import {select} from 'd3-selection';
 import * as d3 from'd3';
 import {interpolateHsvLong} from 'd3-hsv';
 import {zoom} from 'd3-zoom';
-
+import '../../css/d3-styles.css'
 import * as elevationData from '../../datasets/alyeska-elevation.json';
 
 const features = [
@@ -38,11 +38,14 @@ const createMap = async(ref) => {
   const width = svgWidth - margin.left - margin.right;
   const height = svgHeight - margin.bottom - margin.top;
   const svg = select(ref.current)
-    .attr('viewBox', '0 0 ' + width + ' ' + height )
+    .attr('viewBox', '0 0 ' + width + ' ' + height );
   
-  const data = elevationData.values
-  const rows = elevationData.rows
-  const cols = elevationData.cols
+  const tooltip = select('.tooltip')
+    .style("opacity", 0);
+  
+  const data = elevationData.values;
+  const rows = elevationData.rows;
+  const cols = elevationData.cols;
 
   const large_thresholds = range(25,1575,50);
   const small_thresholds = range(0,20,5);
@@ -74,14 +77,26 @@ const createMap = async(ref) => {
       .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
   }
 
-  g.selectAll('circle')
+  g.selectAll('features')
     .data(features)
     .enter()
     .append('circle')
     .attr('cx', (d) => { return projection([d.x,d.y])[0]; })
     .attr('cy', (d) => { return projection([d.x,d.y])[1]; })
     .attr('r', '7px')
-    .attr('fill', 'red');
+    .attr('fill', 'red')
+    .on('mouseover', (event,d) => {
+      let mouse = d3.pointer(event, svg.node());
+      tooltip.html(
+        `<p>${d.name} - ${d.description}</p>`
+      )
+      .style("left", (mouse[0] + 40) + "px")
+      .style("top", (mouse[1] + 40) + "px")
+      .style("opacity", 0.9);
+    })
+    .on('mouseout', (event,d) => {
+      tooltip.style("opacity", 0);
+    });
 
   g.selectAll('text')
     .data(labels)
@@ -105,7 +120,12 @@ const AlyeskaContourMap = () => {
     createMap(svgRef);
   }, []);
 
-  return <svg ref={svgRef} />
+  return (
+    <div>
+      <div className='tooltip'></div>
+      <svg ref={svgRef} />
+    </div>
+    )
 }
 
 export default AlyeskaContourMap;
