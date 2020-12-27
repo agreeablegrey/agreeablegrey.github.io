@@ -61,8 +61,12 @@ const createMap = async(ref) => {
   const path = d3.geoPath()
     .projection(projection);
   
-  let hsvcolor = interpolateHsvLong('#5e85b8', '#bd2202');
-  let color = d3.scaleSequential(hsvcolor).domain(d3.extent(data));
+  const interpolateTerrain = (threshold) => {
+    const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
+    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
+  };
+  let color = d3.scaleSequential(interpolateTerrain).domain(d3.extent(data));
+
 
   const zoomed = ({transform}) => {
     g.attr('transform', transform);
@@ -90,8 +94,8 @@ const createMap = async(ref) => {
       tooltip.html(
         `<p>${d.name} - ${d.description}</p>`
       )
-      .style("left", (mouse[0] + 40) + "px")
-      .style("top", (mouse[1] + 40) + "px")
+      .style("left", (mouse[0]) + "px")
+      .style("top", (mouse[1]) + "px")
       .style("opacity", 0.9);
     })
     .on('mouseout', (event,d) => {
@@ -103,6 +107,7 @@ const createMap = async(ref) => {
     .enter()
     .append('text')
     .attr('transform', (d) => {return `translate(${projection([d.x,d.y])[0]},${projection([d.x,d.y])[1]})rotate(${d.rotation})`})
+    .attr('letter-spacing', 3)
     .text((d) => { return d.label; });
 
   svg.call(zoom()

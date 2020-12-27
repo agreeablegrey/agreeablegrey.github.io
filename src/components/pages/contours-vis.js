@@ -5,16 +5,20 @@ import Container from 'react-bootstrap/Container';
 const ContoursVis = () => {
   return(
     <Container>
-      <div className='row'>
-        <h1>Hello World!</h1>
+      <div className='row no-gutters'>
+        <div className='col'>
+          <h1 className='text-center'>Alyeska Contour Map</h1>
+        </div>
       </div>
       <div className='row no-gutters'>
-        <div className="col" style={{border: "10px solid black"}}>
+        <div className='col' style={{border: '10px solid black'}}>
           <AlyeskaContourMap />
         </div>
       </div>
       <div className='row'>
-        <h1>Goodbye World!</h1>
+      <div className='col'>
+          <p className='text-center mt-3'>An interactive contour map of Mount Alyeska and surrounding areas. Work in progress.</p>
+      </div>
       </div>
     </Container>
   );
