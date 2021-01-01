@@ -24,7 +24,7 @@ const ContoursVis = () => {
       </div>
       <div className='row no-gutters'>
         <div className='col' style={{border: '10px solid black'}}>
-          <AlyeskaContourMap />
+          <AlyeskaContourMap contourSetting={radioValue}/>
         </div>
       </div>
       <div className='row no-gutters' style={{border: '10px solid black'}} >

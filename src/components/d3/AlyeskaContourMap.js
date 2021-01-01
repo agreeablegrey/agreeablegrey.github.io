@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import {select} from 'd3-selection';
+import {select, selectAll} from 'd3-selection';
 import * as d3 from'd3';
 import {interpolateHsvLong} from 'd3-hsv';
 import {zoom} from 'd3-zoom';
@@ -22,7 +22,7 @@ const features = [
 
 const labels = [
   {x: 55, y: 140, rotation: 25, label: 'Turnagain Arm'},
-  {x: 90, y: 87, rotation: -55, label: 'Girdwood'},
+  {x: 87, y: 80, rotation: -55, label: 'Girdwood'},
 ];
 
 const range = (begin,end,step=1) => {
@@ -30,6 +30,93 @@ const range = (begin,end,step=1) => {
   const array_size = Math.ceil((end - begin) / step);
   return Array(array_size).fill(begin).map((num, i) => num + (i * step));
 }
+
+let _alyeska_projection = null;
+
+const getThresholds = (contourSetting) => {
+  const large_thresholds = range(50,1600,50);
+  const small_thresholds = range(0,20,5);
+
+  if (contourSetting === 'mixed') {
+    return small_thresholds.concat(large_thresholds);
+  }
+  else if (contourSetting === 'small') {
+    return small_thresholds;
+  }
+  else {
+    return large_thresholds;
+  }
+
+};
+
+const updateContours = (ref,contourSetting) => {
+  const thresholds = getThresholds(contourSetting);
+
+  const svg = select(ref.current);
+  const g = svg.select('g');
+  const paths = g.selectAll("path")
+  const path = d3.geoPath()
+    .projection(_alyeska_projection);
+  
+  const rows = elevationData.rows;
+  const cols = elevationData.cols;
+  const data = elevationData.values;
+  const contours = d3.contours().size([cols, rows]);
+
+  const interpolateTerrain = (threshold) => {
+    const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
+    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
+  };
+  let color = d3.scaleSequential(interpolateTerrain).domain(d3.extent(data));
+  const tooltip = select('.tooltip')
+    .style("opacity", 0);
+
+  selectAll("path").remove();
+  selectAll("circle").remove();
+  selectAll("text").remove();
+
+  for (const threshold of thresholds) {
+    g.append('path')
+      .attr('d', path(contours.contour(data, threshold)))
+      .attr('fill', color(threshold))
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1)
+      .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
+  }
+
+  g.selectAll('features')
+    .data(features)
+    .enter()
+    .append('circle')
+    .attr('cx', (d) => { return _alyeska_projection([d.x,d.y])[0]; })
+    .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
+    .attr('r', '7px')
+    .attr('fill', 'red')
+    .on('mouseover', (event,d) => {
+      let mouse = d3.pointer(event, svg.node());
+      tooltip.html(
+        `<p>${d.name} - ${d.description}</p>`
+      )
+      .style("left", (mouse[0] + 25) + "px")
+      .style("top", (mouse[1] - 10) + "px")
+      .style("opacity", 0.9);
+    })
+    .on('mouseout', (event,d) => {
+      tooltip.style("opacity", 0);
+    });
+
+  g.selectAll('text')
+    .data(labels)
+    .enter()
+    .append('text')
+    .attr('transform', (d) => {return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})rotate(${d.rotation})`})
+    .attr('letter-spacing', 3)
+    .text((d) => { return d.label; });
+
+  //TODO refactor code to reduce duplication
+  //TODO fix map features on small contours
+
+};
 
 const createMap = async(ref) => {
   const margin = {top: 0, right: 0, bottom: 0, left: 0};
@@ -47,19 +134,17 @@ const createMap = async(ref) => {
   const rows = elevationData.rows;
   const cols = elevationData.cols;
 
-  const large_thresholds = range(25,1575,50);
-  const small_thresholds = range(0,20,5);
-  const thresholds = small_thresholds.concat(large_thresholds);
+  const thresholds = getThresholds('mixed');
 
   const contours = d3.contours().size([cols, rows]);
 
-  const projection = d3.geoIdentity()
+  _alyeska_projection = d3.geoIdentity()
     .fitWidth(width, contours(data)[0]);
 
   const g = svg.append('g');
 
   const path = d3.geoPath()
-    .projection(projection);
+    .projection(_alyeska_projection);
   
   const interpolateTerrain = (threshold) => {
     const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
@@ -78,6 +163,7 @@ const createMap = async(ref) => {
       .attr('fill', color(threshold))
       .attr('stroke', 'black')
       .attr('stroke-width', 1)
+      .attr('class', `threshold-${threshold}`)
       .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
   }
 
@@ -85,8 +171,8 @@ const createMap = async(ref) => {
     .data(features)
     .enter()
     .append('circle')
-    .attr('cx', (d) => { return projection([d.x,d.y])[0]; })
-    .attr('cy', (d) => { return projection([d.x,d.y])[1]; })
+    .attr('cx', (d) => { return _alyeska_projection([d.x,d.y])[0]; })
+    .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
     .attr('r', '7px')
     .attr('fill', 'red')
     .on('mouseover', (event,d) => {
@@ -94,8 +180,8 @@ const createMap = async(ref) => {
       tooltip.html(
         `<p>${d.name} - ${d.description}</p>`
       )
-      .style("left", (mouse[0]) + "px")
-      .style("top", (mouse[1]) + "px")
+      .style("left", (mouse[0] + 25) + "px")
+      .style("top", (mouse[1] - 10) + "px")
       .style("opacity", 0.9);
     })
     .on('mouseout', (event,d) => {
@@ -106,7 +192,7 @@ const createMap = async(ref) => {
     .data(labels)
     .enter()
     .append('text')
-    .attr('transform', (d) => {return `translate(${projection([d.x,d.y])[0]},${projection([d.x,d.y])[1]})rotate(${d.rotation})`})
+    .attr('transform', (d) => {return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})rotate(${d.rotation})`})
     .attr('letter-spacing', 3)
     .text((d) => { return d.label; });
 
@@ -118,8 +204,12 @@ const createMap = async(ref) => {
 
 }
 
-const AlyeskaContourMap = () => {
+const AlyeskaContourMap = ({contourSetting}) => {
   const svgRef = useRef();
+
+  useEffect(() => {
+      updateContours(svgRef,contourSetting);
+  }, [contourSetting]);
 
   useEffect(() => {
     createMap(svgRef);
