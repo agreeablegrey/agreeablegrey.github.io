@@ -22,7 +22,7 @@ const features = [
 
 const labels = [
   {x: 55, y: 140, rotation: 25, label: 'Turnagain Arm'},
-  {x: 87, y: 80, rotation: -55, label: 'Girdwood'},
+  {x: 92, y: 80, rotation: -55, label: 'Girdwood'},
 ];
 
 const range = (begin,end,step=1) => {
@@ -34,8 +34,8 @@ const range = (begin,end,step=1) => {
 let _alyeska_projection = null;
 
 const getThresholds = (contourSetting) => {
-  const large_thresholds = range(50,1600,50);
-  const small_thresholds = range(0,20,5);
+  const large_thresholds = range(25,1600,35);
+  const small_thresholds = range(0,25,5);
 
   if (contourSetting === 'mixed') {
     return small_thresholds.concat(large_thresholds);
@@ -49,27 +49,55 @@ const getThresholds = (contourSetting) => {
 
 };
 
+const getContours = () => {
+  const rows = elevationData.rows;
+  const cols = elevationData.cols;
+  return d3.contours().size([cols, rows]);
+};
+
+const getData = () => {
+  return elevationData.values;
+};
+
+const getColorFunc = () => {
+  const interpolateTerrain = (threshold) => {
+    const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
+    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
+  };
+  return d3.scaleSequential(interpolateTerrain).domain(d3.extent(getData()));
+}; 
+
+const handleMouseOver = (event,d, svg) => {
+  const tooltip = select('.tooltip')
+    .style("opacity", 0);
+  
+  const mouse = d3.pointer(event, svg.node());
+  tooltip.html(
+    `<p>${d.name} - ${d.description}</p>`
+  )
+  .style("left", (mouse[0] + 25) + "px")
+  .style("top", (mouse[1] - 10) + "px")
+  .style("opacity", 0.9);
+};
+
+const handleMouseOut = () => {
+  const tooltip = select('.tooltip')
+    .style("opacity", 0);
+  
+  tooltip.style("opacity", 0);
+}
+
 const updateContours = (ref,contourSetting) => {
   const thresholds = getThresholds(contourSetting);
 
   const svg = select(ref.current);
   const g = svg.select('g');
-  const paths = g.selectAll("path")
   const path = d3.geoPath()
     .projection(_alyeska_projection);
   
-  const rows = elevationData.rows;
-  const cols = elevationData.cols;
-  const data = elevationData.values;
-  const contours = d3.contours().size([cols, rows]);
-
-  const interpolateTerrain = (threshold) => {
-    const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
-    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
-  };
-  let color = d3.scaleSequential(interpolateTerrain).domain(d3.extent(data));
-  const tooltip = select('.tooltip')
-    .style("opacity", 0);
+  const data = getData();
+  const contours = getContours();
+  const color = getColorFunc();
 
   selectAll("path").remove();
   selectAll("circle").remove();
@@ -84,7 +112,8 @@ const updateContours = (ref,contourSetting) => {
       .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
   }
 
-  g.selectAll('features')
+  if (contourSetting !== 'small') {
+    g.selectAll('features')
     .data(features)
     .enter()
     .append('circle')
@@ -92,18 +121,9 @@ const updateContours = (ref,contourSetting) => {
     .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
     .attr('r', '7px')
     .attr('fill', 'red')
-    .on('mouseover', (event,d) => {
-      let mouse = d3.pointer(event, svg.node());
-      tooltip.html(
-        `<p>${d.name} - ${d.description}</p>`
-      )
-      .style("left", (mouse[0] + 25) + "px")
-      .style("top", (mouse[1] - 10) + "px")
-      .style("opacity", 0.9);
-    })
-    .on('mouseout', (event,d) => {
-      tooltip.style("opacity", 0);
-    });
+    .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
+    .on('mouseout', handleMouseOut);
+  }
 
   g.selectAll('text')
     .data(labels)
@@ -112,9 +132,6 @@ const updateContours = (ref,contourSetting) => {
     .attr('transform', (d) => {return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})rotate(${d.rotation})`})
     .attr('letter-spacing', 3)
     .text((d) => { return d.label; });
-
-  //TODO refactor code to reduce duplication
-  //TODO fix map features on small contours
 
 };
 
@@ -127,16 +144,10 @@ const createMap = async(ref) => {
   const svg = select(ref.current)
     .attr('viewBox', '0 0 ' + width + ' ' + height );
   
-  const tooltip = select('.tooltip')
-    .style("opacity", 0);
-  
-  const data = elevationData.values;
-  const rows = elevationData.rows;
-  const cols = elevationData.cols;
-
+  const data = getData();
   const thresholds = getThresholds('mixed');
-
-  const contours = d3.contours().size([cols, rows]);
+  const contours = getContours();
+  const color = getColorFunc();
 
   _alyeska_projection = d3.geoIdentity()
     .fitWidth(width, contours(data)[0]);
@@ -145,13 +156,6 @@ const createMap = async(ref) => {
 
   const path = d3.geoPath()
     .projection(_alyeska_projection);
-  
-  const interpolateTerrain = (threshold) => {
-    const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
-    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
-  };
-  let color = d3.scaleSequential(interpolateTerrain).domain(d3.extent(data));
-
 
   const zoomed = ({transform}) => {
     g.attr('transform', transform);
@@ -175,18 +179,8 @@ const createMap = async(ref) => {
     .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
     .attr('r', '7px')
     .attr('fill', 'red')
-    .on('mouseover', (event,d) => {
-      let mouse = d3.pointer(event, svg.node());
-      tooltip.html(
-        `<p>${d.name} - ${d.description}</p>`
-      )
-      .style("left", (mouse[0] + 25) + "px")
-      .style("top", (mouse[1] - 10) + "px")
-      .style("opacity", 0.9);
-    })
-    .on('mouseout', (event,d) => {
-      tooltip.style("opacity", 0);
-    });
+    .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
+    .on('mouseout', handleMouseOut);
 
   g.selectAll('text')
     .data(labels)
