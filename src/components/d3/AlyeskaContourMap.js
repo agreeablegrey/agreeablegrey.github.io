@@ -59,10 +59,18 @@ const getData = () => {
   return elevationData.values;
 };
 
-const getColorFunc = () => {
+const getColorFunc = (contourSetting) => {
   const interpolateTerrain = (threshold) => {
     const hsvcolor = interpolateHsvLong('#035406', '#ffe0db');
-    return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
+    if (contourSetting === 'large') {
+      return hsvcolor(threshold);
+    }
+    else if (contourSetting === 'small') {
+      return threshold === 0 ? '#7da0ad' : threshold >= .01 ? '#ffffff' : hsvcolor(threshold);
+    }
+    else {
+      return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
+    }
   };
   return d3.scaleSequential(interpolateTerrain).domain(d3.extent(getData()));
 }; 
@@ -97,7 +105,7 @@ const updateContours = (ref,contourSetting) => {
   
   const data = getData();
   const contours = getContours();
-  const color = getColorFunc();
+  const color = getColorFunc(contourSetting);
 
   selectAll("path").remove();
   selectAll("circle").remove();
@@ -135,7 +143,7 @@ const updateContours = (ref,contourSetting) => {
 
 };
 
-const createMap = async(ref) => {
+const createMap = async(ref, contourSetting) => {
   const margin = {top: 0, right: 0, bottom: 0, left: 0};
   const svgWidth = 1000;
   const svgHeight = 1300;
@@ -145,9 +153,9 @@ const createMap = async(ref) => {
     .attr('viewBox', '0 0 ' + width + ' ' + height );
   
   const data = getData();
-  const thresholds = getThresholds('mixed');
+  const thresholds = getThresholds(contourSetting);
   const contours = getContours();
-  const color = getColorFunc();
+  const color = getColorFunc(contourSetting);
 
   _alyeska_projection = d3.geoIdentity()
     .fitWidth(width, contours(data)[0]);
@@ -206,7 +214,7 @@ const AlyeskaContourMap = ({contourSetting}) => {
   }, [contourSetting]);
 
   useEffect(() => {
-    createMap(svgRef);
+    createMap(svgRef, contourSetting);
   }, []);
 
   return (
