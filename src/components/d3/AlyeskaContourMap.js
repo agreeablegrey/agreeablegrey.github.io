@@ -58,7 +58,6 @@ const getContours = () => {
 };
 
 const getData = () => {
-  console.log(d3.max(elevationData.values))
   return elevationData.values;
 };
 
