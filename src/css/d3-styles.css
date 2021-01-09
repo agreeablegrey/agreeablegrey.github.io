@@ -8,3 +8,8 @@
     border-radius: 10px;
     pointer-events: none;
   }
+
+.d3-svg {
+  background-color: #8a8686;
+
+  }

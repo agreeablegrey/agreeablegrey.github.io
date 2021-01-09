@@ -32,6 +32,8 @@ const range = (begin,end,step=1) => {
 }
 
 let _alyeska_projection = null;
+const _svgWidth = 1000;
+const _svgHeight = 1300;
 
 const getThresholds = (contourSetting) => {
   const large_thresholds = range(25,1600,35);
@@ -66,14 +68,14 @@ const getColorFunc = (contourSetting) => {
       return hsvcolor(threshold);
     }
     else if (contourSetting === 'small') {
-      return threshold === 0 ? '#7da0ad' : threshold >= .01 ? '#ffffff' : hsvcolor(threshold);
+      return threshold === 0 ? '#7da0ad' : threshold >= .01 ? '#8a8686' : hsvcolor(threshold);
     }
     else {
       return threshold === 0 ? '#7da0ad' : hsvcolor(threshold);
     }
   };
   return d3.scaleSequential(interpolateTerrain).domain(d3.extent(getData()));
-}; 
+};
 
 const handleMouseOver = (event,d, svg) => {
   const tooltip = select('.tooltip')
@@ -145,12 +147,13 @@ const updateContours = (ref,contourSetting) => {
 
 const createMap = async(ref, contourSetting) => {
   const margin = {top: 0, right: 0, bottom: 0, left: 0};
-  const svgWidth = 1000;
-  const svgHeight = 1300;
+  const svgWidth = _svgWidth;
+  const svgHeight = _svgHeight;
   const width = svgWidth - margin.left - margin.right;
   const height = svgHeight - margin.bottom - margin.top;
   const svg = select(ref.current)
-    .attr('viewBox', '0 0 ' + width + ' ' + height );
+    .attr('viewBox', '0 0 ' + width + ' ' + height)
+    .attr('class','d3-svg');
   
   const data = getData();
   const thresholds = getThresholds(contourSetting);
