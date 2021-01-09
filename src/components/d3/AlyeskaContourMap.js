@@ -36,7 +36,7 @@ const _svgWidth = 1000;
 const _svgHeight = 1300;
 
 const getThresholds = (contourSetting) => {
-  const large_thresholds = range(25,1600,35);
+  const large_thresholds = range(25,1540,35);
   const small_thresholds = range(0,25,5);
 
   if (contourSetting === 'mixed') {
@@ -58,6 +58,7 @@ const getContours = () => {
 };
 
 const getData = () => {
+  console.log(d3.max(elevationData.values))
   return elevationData.values;
 };
 

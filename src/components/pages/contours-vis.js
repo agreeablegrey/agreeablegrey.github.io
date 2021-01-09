@@ -4,11 +4,18 @@ import Container from 'react-bootstrap/Container';
 import RadioButtonsVertical from '../RadioButtons';
 
 const ContoursVis = () => {
-  const contourRadioVals = [
+  const contourRadioVals = {
+    values: [
     'mixed',
     'large',
     'small'
-  ]
+    ],
+    labels: [
+      'mixed - combined large and small intervals',
+      'large (25m - 1540m interval: 35m)',
+      'small (0m - 25m interval: 5m)'
+    ]
+  }
 
   const [radioValue, setRadioValue] = useState('mixed');
   const handleRadioChange = (event) => {
@@ -29,8 +36,13 @@ const ContoursVis = () => {
       </div>
       <div className='row no-gutters' style={{border: '10px solid black'}} >
         <div className='col'>
-            <p>Contours</p>
-            <RadioButtonsVertical onValueChange={handleRadioChange} checkedVal={radioValue} radioVals={contourRadioVals}/>
+            <p>Contour Interval</p>
+            <RadioButtonsVertical 
+              onValueChange={handleRadioChange}
+              checkedVal={radioValue}
+              radioVals={contourRadioVals.values}
+              radioLabels={contourRadioVals.labels}
+            />
         </div>
       </div>
       <div className='row'>

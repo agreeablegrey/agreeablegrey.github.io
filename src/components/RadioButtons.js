@@ -1,7 +1,7 @@
 import React from 'react';
 
-const RadioButtonsVertical = ({onValueChange, checkedVal, radioVals}) => {
-    const radioButtons = radioVals.map((val) => {
+const RadioButtonsVertical = ({onValueChange, checkedVal, radioVals, radioLabels}) => {
+    const radioButtons = radioVals.map((val,i) => {
         return (
             <div key={val}>
                 <input
@@ -11,7 +11,7 @@ const RadioButtonsVertical = ({onValueChange, checkedVal, radioVals}) => {
                     checked={checkedVal === val}
                     onChange={onValueChange}
                 />
-                <label htmlFor={val}>{val}</label>
+                <label htmlFor={val}>{radioLabels[i]}</label>
             </div>
         );
     });
