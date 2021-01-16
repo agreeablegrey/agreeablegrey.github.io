@@ -5,6 +5,7 @@ import {interpolateHsvLong} from 'd3-hsv';
 import {zoom} from 'd3-zoom';
 import '../../css/d3-styles.css'
 import * as elevationData from '../../datasets/alyeska-elevation.json';
+import { html, interval } from 'd3';
 
 const features = [
   {x: 128.5, y: 85.25, name: 'Baumann Bump', description: '1006m'},
@@ -77,24 +78,37 @@ const getColorFunc = (contourSetting) => {
   return d3.scaleSequential(interpolateTerrain).domain(d3.extent(getData()));
 };
 
-const handleMouseOver = (event,d, svg) => {
+const handleMouseOver = (event,d, svg,threshold=-1) => {
   const tooltip = select('.tooltip')
     .style("opacity", 0);
   
   const mouse = d3.pointer(event, svg.node());
-  tooltip.html(
-    `<p>${d.name} - ${d.description}</p>`
-  )
+  let html = '';
+
+  if (threshold !== -1) {
+    html = `<p>${threshold}m`;
+    select(`.threshold-${threshold}`)
+      .attr('stroke', 'red')
+
+  }
+  else {
+    html = `<p>${d.name} - ${d.description}</p>`;
+  }
+
+  tooltip.html(html)
   .style("left", (mouse[0] + 25) + "px")
   .style("top", (mouse[1] - 10) + "px")
   .style("opacity", 0.9);
 };
 
-const handleMouseOut = () => {
+const handleMouseOut = (event,d,threshold=-1) => {
   const tooltip = select('.tooltip')
     .style("opacity", 0);
-  
-  tooltip.style("opacity", 0);
+
+  if (threshold !== -1) {
+    select(`.threshold-${threshold}`)
+      .attr('stroke', 'black');
+  }
 }
 
 const updateContours = (ref,contourSetting) => {
@@ -120,6 +134,9 @@ const updateContours = (ref,contourSetting) => {
       .attr('stroke', 'black')
       .attr('stroke-width', 1)
       .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
+      .attr('class', `threshold-${threshold}`)
+      .on('mouseover', (event,d) => {handleMouseOver(event,d,svg,threshold)})
+      .on('mouseout', (event,d) => { handleMouseOut(event,d,threshold)});
   }
 
   if (contourSetting !== 'small') {
@@ -180,6 +197,8 @@ const createMap = async(ref, contourSetting) => {
       .attr('stroke-width', 1)
       .attr('class', `threshold-${threshold}`)
       .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
+      .on('mouseover', (event,d) => {handleMouseOver(event,d,svg,threshold)})
+      .on('mouseout', (event,d) => { handleMouseOut(event,d,threshold)});
   }
 
   g.selectAll('features')
