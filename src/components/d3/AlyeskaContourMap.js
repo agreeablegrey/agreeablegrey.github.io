@@ -87,7 +87,8 @@ const handleMouseOver = (event,d, svg,threshold=-1) => {
   if (threshold !== -1) {
     html = `<p>${threshold}m`;
     select(`.threshold-${threshold}`)
-      .attr('stroke', 'red')
+      .attr('stroke', '#c70808')
+      .attr('stroke-width',3);
 
   }
   else {
@@ -106,7 +107,8 @@ const handleMouseOut = (event,d,threshold=-1) => {
 
   if (threshold !== -1) {
     select(`.threshold-${threshold}`)
-      .attr('stroke', 'black');
+      .attr('stroke', 'black')
+      .attr('stroke-width',1);
   }
 }
 
