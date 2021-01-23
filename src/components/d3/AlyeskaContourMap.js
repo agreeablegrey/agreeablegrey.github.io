@@ -20,9 +20,15 @@ const features = [
   {x: 24.5, y: 84, name: 'Crested Peak', description: '1075m'},
 ];
 
+const humanFeatures = [
+  {x: 92, y: 80,  name: 'Girdwood', description: 'Small resort town'},
+  {x: 213, y: 253,  name: 'Portage', description: 'Town destroyed in 1964 Alaskan earthquake'},
+  {x: 215, y: 265,  name: 'Alaska Wildlife Conservation Center', description: 'Wildlife sanctuary'},
+
+];
+
 const labels = [
   {x: 55, y: 140, rotation: 25, label: 'Turnagain Arm'},
-  {x: 92, y: 80, rotation: -55, label: 'Girdwood'},
 ];
 
 const range = (begin,end,step=1) => {
@@ -170,8 +176,30 @@ const addFeatures = (svg,g) => {
     })
     .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
     .on('mouseout', handleMouseOut);
+  
+    addHumanFeatures(svg,g);
 
 };
+
+const addHumanFeatures = (svg,g) => {
+
+  const star = d3.symbol(d3.symbolStar, 250);
+
+  g.selectAll('humanFeatures')
+  .data(humanFeatures)
+  .enter()
+  .append('path')
+  .attr('d', star)
+  .attr('fill', 'yellow')
+  .attr('stroke', 'black')
+  .attr('stroke-width', 2)
+  .attr('transform', function(d) {
+    return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})`;
+  })
+  .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
+  .on('mouseout', handleMouseOut);
+
+}
 
 const createMap = async(ref, contourSetting) => {
   const margin = {top: 0, right: 0, bottom: 0, left: 0};
