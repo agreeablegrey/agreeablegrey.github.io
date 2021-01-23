@@ -14,8 +14,7 @@ const features = [
   {x: 107, y: 216.5, name: 'Pyramid Peak', description: '1002m'},
   {x: 161.75, y: 149.75, name: 'Bramble Knoll', description: '988m'},
   {x: 198, y: 93, name: 'HighBrush Peak', description: '1423m'},
-  {x: 210, y: 159, name: 'Blueberry Hill', description: '1275m'},
-  {x: 167.5, y: 37.5, name: 'Notch Mountain', description: '91m'},
+  {x: 167.5, y: 37.5, name: 'Notch Mountain', description: '941m'},
   {x: 52, y: 38, name: 'Gentoo Peak', description: '1278m'},
   {x: 39.5, y: 70, name: 'Chinstrap Peak', description: '1102m'},
   {x: 24.5, y: 84, name: 'Crested Peak', description: '1075m'},
@@ -37,7 +36,7 @@ const _svgWidth = 1000;
 const _svgHeight = 1300;
 
 const getThresholds = (contourSetting) => {
-  const large_thresholds = range(25,1540,35);
+  const large_thresholds = range(25,1575,50);
   const small_thresholds = range(0,25,5);
 
   if (contourSetting === 'mixed') {
@@ -140,16 +139,7 @@ const updateContours = (ref,contourSetting) => {
   }
 
   if (contourSetting !== 'small') {
-    g.selectAll('features')
-    .data(features)
-    .enter()
-    .append('circle')
-    .attr('cx', (d) => { return _alyeska_projection([d.x,d.y])[0]; })
-    .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
-    .attr('r', '7px')
-    .attr('fill', 'red')
-    .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
-    .on('mouseout', handleMouseOut);
+    addFeatures(svg,g);
   }
 
   g.selectAll('text')
@@ -159,6 +149,25 @@ const updateContours = (ref,contourSetting) => {
     .attr('transform', (d) => {return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})rotate(${d.rotation})`})
     .attr('letter-spacing', 3)
     .text((d) => { return d.label; });
+
+};
+
+const addFeatures = (svg,g) => {
+  const triangle = d3.symbol(d3.symbolTriangle, 100);
+
+  g.selectAll('features')
+    .data(features)
+    .enter()
+    .append('path')
+    .attr('d', triangle)
+    .attr('fill', 'red')
+    .attr('stroke', 'black')
+    .attr('stroke-width', 2)
+    .attr('transform', function(d) {
+      return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})`;
+    })
+    .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
+    .on('mouseout', handleMouseOut);
 
 };
 
@@ -201,16 +210,7 @@ const createMap = async(ref, contourSetting) => {
       .on('mouseout', (event,d) => { handleMouseOut(event,d,threshold)});
   }
 
-  g.selectAll('features')
-    .data(features)
-    .enter()
-    .append('circle')
-    .attr('cx', (d) => { return _alyeska_projection([d.x,d.y])[0]; })
-    .attr('cy', (d) => { return _alyeska_projection([d.x,d.y])[1]; })
-    .attr('r', '7px')
-    .attr('fill', 'red')
-    .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
-    .on('mouseout', handleMouseOut);
+  addFeatures(svg,g);
 
   g.selectAll('text')
     .data(labels)

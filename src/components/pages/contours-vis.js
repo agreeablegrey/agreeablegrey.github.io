@@ -12,7 +12,7 @@ const ContoursVis = () => {
     ],
     labels: [
       'mixed - (combined large and small intervals)',
-      'large (25m - 1540m interval: 35m)',
+      'large (25m - 1575m interval: 50m)',
       'small (0m - 20m interval: 5m)'
     ]
   }
