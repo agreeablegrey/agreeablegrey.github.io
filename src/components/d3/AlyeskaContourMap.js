@@ -21,7 +21,7 @@ const features = [
 ];
 
 const humanFeatures = [
-  {x: 92, y: 80,  name: 'Girdwood', description: 'Small resort town'},
+  {x: 92, y: 80,  name: 'Girdwood', description: 'Small community ~40 miles southeast of Anchorage'},
   {x: 213, y: 253,  name: 'Portage', description: 'Town destroyed in 1964 Alaskan earthquake'},
   {x: 215, y: 265,  name: 'Alaska Wildlife Conservation Center', description: 'Wildlife sanctuary'},
 
@@ -149,6 +149,9 @@ const updateContours = (ref,contourSetting) => {
   if (contourSetting !== 'small') {
     addFeatures(svg,g);
   }
+  else {
+    addHumanFeatures(svg,g);
+  }
 
   g.selectAll('text')
     .data(labels)
@@ -160,7 +163,7 @@ const updateContours = (ref,contourSetting) => {
 
 };
 
-const addFeatures = (svg,g) => {
+const addElevationFeatures = (svg,g) => {
   const triangle = d3.symbol(d3.symbolTriangle, 100);
 
   g.selectAll('features')
@@ -176,9 +179,11 @@ const addFeatures = (svg,g) => {
     })
     .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
     .on('mouseout', handleMouseOut);
-  
-    addHumanFeatures(svg,g);
+};
 
+const addFeatures = (svg,g) => {  
+    addElevationFeatures(svg,g)
+    addHumanFeatures(svg,g);
 };
 
 const addHumanFeatures = (svg,g) => {
