@@ -40,10 +40,11 @@ const range = (begin,end,step=1) => {
 let _alyeska_projection = null;
 const _svgWidth = 1000;
 const _svgHeight = 1300;
+const _intervalTypeSep = 25;
 
 const getThresholds = (contourSetting) => {
-  const large_thresholds = range(25,1575,50);
-  const small_thresholds = range(0,25,5);
+  const large_thresholds = range(_intervalTypeSep,1575,50);
+  const small_thresholds = range(0,_intervalTypeSep,5);
 
   if (contourSetting === 'mixed') {
     return small_thresholds.concat(large_thresholds);
@@ -140,7 +141,7 @@ const updateContours = (ref,contourSetting) => {
       .attr('fill', color(threshold))
       .attr('stroke', 'black')
       .attr('stroke-width', 1)
-      .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
+      .style('stroke-dasharray', () => {return (threshold < _intervalTypeSep) ? ('3, 3') : null})
       .attr('class', `threshold-${threshold}`)
       .on('mouseover', (event,d) => {handleMouseOver(event,d,svg,threshold)})
       .on('mouseout', (event,d) => { handleMouseOut(event,d,threshold)});
@@ -240,7 +241,7 @@ const createMap = async(ref, contourSetting) => {
       .attr('stroke', 'black')
       .attr('stroke-width', 1)
       .attr('class', `threshold-${threshold}`)
-      .style('stroke-dasharray', () => {return (threshold < 20) ? ('3, 3') : null})
+      .style('stroke-dasharray', () => {return (threshold < _intervalTypeSep) ? ('3, 3') : null})
       .on('mouseover', (event,d) => {handleMouseOver(event,d,svg,threshold)})
       .on('mouseout', (event,d) => { handleMouseOut(event,d,threshold)});
   }
