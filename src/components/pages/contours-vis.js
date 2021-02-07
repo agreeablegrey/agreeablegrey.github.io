@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import AlyeskaContourMap from '../d3/AlyeskaContourMap';
+import AlyeskaContourLegend from '../d3/AlyeskaContourLegend';
 import Container from 'react-bootstrap/Container';
 import RadioButtonsVertical from '../RadioButtons';
 
@@ -43,6 +44,10 @@ const ContoursVis = () => {
               radioVals={contourRadioVals.values}
               radioLabels={contourRadioVals.labels}
             />
+        </div>
+        <div className='col'>
+            <p>Intervals</p>
+            <AlyeskaContourLegend />
         </div>
       </div>
       <div className='row'>
