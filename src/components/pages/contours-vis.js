@@ -46,7 +46,7 @@ const ContoursVis = () => {
             />
         </div>
         <div className='col'>
-            <p>Intervals</p>
+            <p>Line Intervals</p>
             <AlyeskaContourLegend />
         </div>
       </div>

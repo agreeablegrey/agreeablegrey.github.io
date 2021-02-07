@@ -133,7 +133,7 @@ const updateContours = (ref,contourSetting) => {
 
   selectAll("path").remove();
   selectAll("circle").remove();
-  selectAll("text").remove();
+  selectAll("label-text").remove();
 
   for (const threshold of thresholds) {
     g.append('path')
@@ -154,7 +154,7 @@ const updateContours = (ref,contourSetting) => {
     addHumanFeatures(svg,g);
   }
 
-  g.selectAll('text')
+  g.selectAll('label-text')
     .data(labels)
     .enter()
     .append('text')
@@ -248,7 +248,7 @@ const createMap = async(ref, contourSetting) => {
 
   addFeatures(svg,g);
 
-  g.selectAll('text')
+  g.selectAll('label-text')
     .data(labels)
     .enter()
     .append('text')
