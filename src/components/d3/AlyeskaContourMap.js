@@ -6,6 +6,7 @@ import {zoom} from 'd3-zoom';
 import '../../css/d3-styles.css'
 import * as elevationData from '../../datasets/alyeska-elevation.json';
 import { html, interval } from 'd3';
+import { getRange } from '../../utils';
 
 const features = [
   {x: 128.5, y: 85.25, name: 'Baumann Bump', description: '1006m'},
@@ -31,29 +32,23 @@ const labels = [
   {x: 55, y: 140, rotation: 25, label: 'Turnagain Arm'},
 ];
 
-const range = (begin,end,step=1) => {
-  if (step > end) { return Array(); }
-  const array_size = Math.ceil((end - begin) / step);
-  return Array(array_size).fill(begin).map((num, i) => num + (i * step));
-}
-
 let _alyeska_projection = null;
 const _svgWidth = 1000;
 const _svgHeight = 1300;
 const _intervalTypeSep = 25;
 
 const getThresholds = (contourSetting) => {
-  const large_thresholds = range(_intervalTypeSep,1575,50);
-  const small_thresholds = range(0,_intervalTypeSep,5);
+  const largeThresholds = getRange(_intervalTypeSep,1575,50);
+  const smallThresholds = getRange(0,_intervalTypeSep,5);
 
   if (contourSetting === 'mixed') {
-    return small_thresholds.concat(large_thresholds);
+    return smallThresholds.concat(largeThresholds);
   }
   else if (contourSetting === 'small') {
-    return small_thresholds;
+    return smallThresholds;
   }
   else {
-    return large_thresholds;
+    return largeThresholds;
   }
 
 };
