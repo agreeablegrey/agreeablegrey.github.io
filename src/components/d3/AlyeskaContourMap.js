@@ -3,10 +3,9 @@ import {select, selectAll} from 'd3-selection';
 import * as d3 from'd3';
 import {interpolateHsvLong} from 'd3-hsv';
 import {zoom} from 'd3-zoom';
+import { getRange } from '../../utils';
 import '../../css/d3-styles.css'
 import * as elevationData from '../../datasets/alyeska-elevation.json';
-import { html, interval } from 'd3';
-import { getRange } from '../../utils';
 
 const features = [
   {x: 128.5, y: 85.25, name: 'Baumann Bump', description: '1006m'},
@@ -25,7 +24,6 @@ const humanFeatures = [
   {x: 92, y: 80,  name: 'Girdwood', description: 'Small community ~40 miles southeast of Anchorage'},
   {x: 213, y: 253,  name: 'Portage', description: 'Town destroyed in 1964 Alaskan earthquake'},
   {x: 215, y: 265,  name: 'Alaska Wildlife Conservation Center', description: 'Wildlife sanctuary'},
-
 ];
 
 const labels = [
@@ -98,8 +96,8 @@ const handleMouseOver = (event,d, svg,threshold=-1) => {
   }
 
   tooltip.html(html)
-  .style("left", (mouse[0] + 25) + "px")
-  .style("top", (mouse[1] - 10) + "px")
+  .style("left", `${mouse[0] + 25}px`)
+  .style("top", `${mouse[1] - 10}px`)
   .style("opacity", 0.9);
 };
 
@@ -112,7 +110,7 @@ const handleMouseOut = (event,d,threshold=-1) => {
       .attr('stroke', 'black')
       .attr('stroke-width',1);
   }
-}
+};
 
 const updateContours = (ref,contourSetting) => {
   const thresholds = getThresholds(contourSetting);

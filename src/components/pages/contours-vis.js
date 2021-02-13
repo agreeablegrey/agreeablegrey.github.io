@@ -35,9 +35,9 @@ const ContoursVis = () => {
           <AlyeskaContourMap contourSetting={radioValue}/>
         </div>
       </div>
-      <div className='row no-gutters' style={{border: '10px solid black'}} >
-        <div className='col'>
-            <p>Contour Interval</p>
+      <div className='row no-gutters mt-3'>
+        <div className='col-5 pl-2 mx-auto'>
+            <p className='text-center'><u>Contour Presets</u></p>
             <RadioButtonsVertical 
               onValueChange={handleRadioChange}
               checkedVal={radioValue}
@@ -45,8 +45,8 @@ const ContoursVis = () => {
               radioLabels={contourRadioVals.labels}
             />
         </div>
-        <div className='col'>
-            <p>Line Intervals</p>
+        <div className='col-3 pl-2 mx-auto'>
+            <p className='text-center'><u>Contour Intervals</u></p>
             <AlyeskaContourLegend />
         </div>
       </div>

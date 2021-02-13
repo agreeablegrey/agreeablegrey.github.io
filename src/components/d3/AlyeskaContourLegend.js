@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import {select} from 'd3-selection';
 
-const _svgWidth = 15;
+const _svgWidth = 7;
 const _svgHeight = 3;
 
 const createLegend = async (ref) => {
