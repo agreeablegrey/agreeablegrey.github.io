@@ -32,8 +32,9 @@ const ContoursVis = () => {
         </div>
       </div>
       <div className='row'>
-        <div className='col'>
-            <p className='text-center mt-2'>An interactive contour map of Mount Alyeska and surrounding areas. Scroll on the map to zoom.</p>
+        <div className='col text-center'>
+            <p className='mt-2'>An interactive contour map of Mount Alyeska and surrounding areas.</p>
+            <p>Scroll on the map to zoom.</p>
         </div>
       </div>
       <div className='row no-gutters'>
