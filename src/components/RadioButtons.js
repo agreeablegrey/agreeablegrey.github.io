@@ -11,7 +11,7 @@ const RadioButtonsVertical = ({onValueChange, checkedVal, radioVals, radioLabels
                     checked={checkedVal === val}
                     onChange={onValueChange}
                 />
-                <label htmlFor={val}>{radioLabels[i]}</label>
+                <label htmlFor={val} className='pl-1'>{radioLabels[i]}</label>
             </div>
         );
     });

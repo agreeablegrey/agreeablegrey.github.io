@@ -13,9 +13,9 @@ const ContoursVis = () => {
     'small'
     ],
     labels: [
-      'mixed - (combined large and small intervals)',
-      'large (25m - 1575m interval: 50m)',
-      'small (0m - 20m interval: 5m)'
+      'Mixed',
+      'Large (25m - 1575m)',
+      'Small (0m - 20m)'
     ]
   }
 
@@ -43,7 +43,7 @@ const ContoursVis = () => {
       </div>
       <div className='row no-gutters mt-3'>
         <div className='col-5 pl-2 mx-auto'>
-            <p className='text-center'><u>Contour Presets</u></p>
+            <p><u>Contour Presets</u></p>
             <RadioButtonsVertical 
               onValueChange={handleRadioChange}
               checkedVal={radioValue}

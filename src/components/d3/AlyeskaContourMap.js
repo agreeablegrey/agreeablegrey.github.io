@@ -36,7 +36,7 @@ const _svgHeight = 1300;
 const _intervalTypeSep = 25;
 
 const getThresholds = (contourSetting) => {
-  const largeThresholds = getRange(_intervalTypeSep,1575,50);
+  const largeThresholds = getRange(_intervalTypeSep,1576,50);
   const smallThresholds = getRange(0,_intervalTypeSep,5);
 
   if (contourSetting === 'mixed') {
