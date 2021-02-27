@@ -28,16 +28,16 @@ const ContoursVis = () => {
     <Container>
       <div className='row no-gutters'>
         <div className='col'>
-          <h1 className='text-center'>Alyeska Contour Map</h1>
+          <h1 className='text-center font-weight-bold'>Alyeska Contour Map</h1>
         </div>
       </div>
       <div className='row'>
         <div className='col'>
-            <p className='text-center mt-2'>An interactive contour map of Mount Alyeska and surrounding areas.</p>
+            <p className='text-center mt-2'>An interactive contour map of Mount Alyeska and surrounding areas. Scroll on the map to zoom.</p>
         </div>
       </div>
       <div className='row no-gutters'>
-        <div className='col' style={{border: '10px solid black'}}>
+        <div className='col rounded-border-large'>
           <AlyeskaContourMap contourSetting={radioValue}/>
         </div>
       </div>
@@ -69,6 +69,9 @@ const ContoursVis = () => {
               I downloaded the Digital Terrain Model (DTM) IFSAR data available at <a href="https://elevation.alaska.gov/">elevation.alaska.gov</a> for the area around Mount Alyeska.
               Using the <a href="https://rasterio.readthedocs.io/en/latest/intro.html">rasterio</a> Python library I converted the values in the DTM .tif file to JSON and downscaled the elevation data from each datapoint 
               representing an area of 5 meters to representing an area of 15 meters.
+            </p>
+            <p>
+              I used <a href='https://www.peakbagger.com/Default.aspx'>peakbagger</a> to get information about the height of Mount Alyeska and other notable peaks that surrounded it. 
             </p>
           </div>
         </div>

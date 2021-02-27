@@ -9,10 +9,10 @@ import * as elevationData from '../../datasets/alyeska-elevation.json';
 
 const features = [
   {x: 128.5, y: 85.25, name: 'Baumann Bump', description: '1006m'},
-  {x: 148, y: 68.5, name: 'Mount Alyeska', description: '1200m'},
+  {x: 148, y: 68.5, name: 'Mount Alyeska', description: '1201m', color: '#10B9EF'},
   {x: 154.25, y: 89, name: 'Hibbs Peak', description: '1348m'},
-  {x: 107, y: 216.5, name: 'Pyramid Peak', description: '1002m'},
-  {x: 161.75, y: 149.75, name: 'Bramble Knoll', description: '988m'},
+  {x: 107, y: 216.5, name: 'Pyramid Peak', description: '1030m'},
+  {x: 161.75, y: 149.75, name: 'Bramble Knoll', description: '995m'},
   {x: 198, y: 93, name: 'HighBrush Peak', description: '1423m'},
   {x: 167.5, y: 37.5, name: 'Notch Mountain', description: '941m'},
   {x: 52, y: 38, name: 'Gentoo Peak', description: '1278m'},
@@ -165,10 +165,10 @@ const addElevationFeatures = (svg,g) => {
     .enter()
     .append('path')
     .attr('d', triangle)
-    .attr('fill', 'red')
+    .attr('fill', (d) => {return ('color' in d) ? d.color : 'red'})
     .attr('stroke', 'black')
     .attr('stroke-width', 2)
-    .attr('transform', function(d) {
+    .attr('transform', (d) => {
       return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})`;
     })
     .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
@@ -192,7 +192,7 @@ const addHumanFeatures = (svg,g) => {
   .attr('fill', 'yellow')
   .attr('stroke', 'black')
   .attr('stroke-width', 2)
-  .attr('transform', function(d) {
+  .attr('transform', (d) => {
     return `translate(${_alyeska_projection([d.x,d.y])[0]},${_alyeska_projection([d.x,d.y])[1]})`;
   })
   .on('mouseover', (event,d) => {handleMouseOver(event,d,svg)} )
